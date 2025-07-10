@@ -1,137 +1,376 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using Rental_RNG;
-using static Rental_RNG.RentalList;
 
-internal class RentalSearcher
+namespace Rental_RNG
 {
-    static void Main(string[] args)
+    internal class RentalList
     {
-        do
+        public string PokemonName { get; set; }
+        public string ItemName { get; set; }
+
+        public static class PokemonData
         {
-            Console.WriteLine("\n======================================");
-            Console.Write("PWT Tournament Searcher\n");
-            Console.Write("Initial SEED : 0x");   // 初期SEED入力
-
-            if (ulong.TryParse(Console.ReadLine(), System.Globalization.NumberStyles.HexNumber, null, out ulong Seed))
+            public static List<RentalList> GetPokemonRentalList()
             {
-                string outputPath = $"RentalPokemon.txt";
-                List<RentalList> RpokemonList = PokemonData.GetPokemonRentalList();
-                using (StreamWriter writer = new(outputPath))
+                List<RentalList> RpokemonList = new List<RentalList>
                 {
-                    writer.WriteLine("【RentalPokemon List】");
-                    writer.WriteLine($"Initial Seed：0x{Seed:X16}");
-                    writer.WriteLine("");
-
-                    Console.Write("1：");
-                    string target1 = Console.ReadLine();
-                    Console.Write("2：");
-                    string target2 = Console.ReadLine();
-                    Console.WriteLine("");
-
-                    for (int Count = 0; Count < 100; Count++, Seed = NextSeed(Seed))
-                    {
-                        ulong temp = NextSeed(Seed);
-
-                        writer.WriteLine($"Seed：0x{temp:X16}");
-
-                        List<RentalList> SelectedList = new();
-                        HashSet<string> SelectedPokemon = new();
-                        HashSet<string> SelectedItem = new();
-
-                        for (int i = 0; i < 6; i++, temp = NextSeed(temp))
-                        {
-                            ulong ExCount = 0;
-
-                            for (int n = 0; n < 350; n++)
-                            {
-                                var Entry = RpokemonList[n];
-
-                                if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
-                                {
-                                    ExCount++;
-                                }
-                            }
-
-                            ulong temp1 = temp >> 48;
-                            ulong temp2 = temp1 + ((temp >> 32) - (temp1 << 16));
-                            ulong temp3 = temp >> 48;
-                            if (temp2 > 0xFFFF) temp3++;
-
-                            var RentalIndex = 0;
-                            ulong RawIndex = temp3 % (350 - ExCount);
-
-                            while (RawIndex > 0)
-                            {
-                                var Entry = RpokemonList[RentalIndex];
-                                RentalIndex++;
-
-                                if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
-                                {
-                                    continue;
-                                }
-
-                                RawIndex--;
-                            }
-
-                            if (RawIndex == 0)
-                            {
-                                var Entry = RpokemonList[RentalIndex];
-
-                                if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
-                                {
-                                    RentalIndex++;
-                                }
-                            }
-
-                            RentalList SelectedIndex = RpokemonList[RentalIndex];
-
-                            writer.WriteLine($"{i + 1}: {SelectedIndex.PokemonName}@{SelectedIndex.ItemName}");
-
-                            SelectedList.Add(SelectedIndex);
-                            SelectedPokemon.Add(SelectedIndex.PokemonName);
-                            SelectedItem.Add(SelectedIndex.ItemName);
-                        }
-
-                        writer.WriteLine("");
-
-                        if (SelectedList[0].PokemonName == target1 && SelectedList[1].PokemonName == target2)
-                        {
-                            for (int n = 0; n < 6; n++)
-                            {
-                                Console.WriteLine($"{n + 1}：{SelectedList[n].PokemonName}@{SelectedList[n].ItemName}");
-                            }
-
-                            ulong TempSeed = Seed;
-                            for (int n = 0; n < 24; n++)
-                            {
-                                TempSeed = NextSeed(TempSeed);
-                            }
-
-                            Console.WriteLine($"\nSeed：0x{Seed:X16}");
-                            Console.WriteLine($"Current Seed：0x{TempSeed:X16}");
-                        }
-                    }
-                    Console.WriteLine("======================================");
-                }
+                    new RentalList { PokemonName = "フシギバナ", ItemName = "おおきなねっこ" },
+                    new RentalList { PokemonName = "リザードン", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "カメックス", ItemName = "フォーカスレンズ" },
+                    new RentalList { PokemonName = "メガニウム", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "バクフーン", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "オーダイル", ItemName = "のんきのおこう" },
+                    new RentalList { PokemonName = "ジュカイン", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "バシャーモ", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "ラグラージ", ItemName = "ジャポのみ" },
+                    new RentalList { PokemonName = "ドダイトス", ItemName = "しめつけバンド" },
+                    new RentalList { PokemonName = "ゴウカザル", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "エンペルト", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ジャローダ", ItemName = "ラムのみ" },
+                    new RentalList { PokemonName = "エンブオー", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ダイケンキ", ItemName = "しずくプレート" },
+                    new RentalList { PokemonName = "ダグトリオ", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ガラガラ", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "チャーレム", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "ヌオー", ItemName = "リンドのみ" },
+                    new RentalList { PokemonName = "グランブル", ItemName = "ジャポのみ" },
+                    new RentalList { PokemonName = "ルージュラ", ItemName = "ナゾのみ" },
+                    new RentalList { PokemonName = "バリヤード", ItemName = "こだわりスカーフ" },
+                    new RentalList { PokemonName = "ランターン", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "キノガッサ", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "フォレトス", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "エアームド", ItemName = "まんぷくおこう" },
+                    new RentalList { PokemonName = "アブソル", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ナマズン", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ハリテヤマ", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "ビークイン", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "ライチュウ", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ジュゴン", ItemName = "つめたいいわ" },
+                    new RentalList { PokemonName = "ライボルト", ItemName = "いのちのたま" },
+                    new RentalList { PokemonName = "ムクホーク", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "トリトドン", ItemName = "しめったいわ" },
+                    new RentalList { PokemonName = "スカタンク", ItemName = "シュカのみ" },
+                    new RentalList { PokemonName = "ダゲキ", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "ナゲキ", ItemName = "ウタンのみ" },
+                    new RentalList { PokemonName = "ケンホロウ", ItemName = "ナゾのみ" },
+                    new RentalList { PokemonName = "ラフレシア", ItemName = "キーのみ" },
+                    new RentalList { PokemonName = "ウツボット", ItemName = "ウタンのみ" },
+                    new RentalList { PokemonName = "マルマイン", ItemName = "シュカのみ" },
+                    new RentalList { PokemonName = "ルンパッパ", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "ダーテング", ItemName = "くろいてっきゅう" },
+                    new RentalList { PokemonName = "バクオング", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ミミロップ", ItemName = "どくどくだま" },
+                    new RentalList { PokemonName = "ユキメノコ", ItemName = "つめたいいわ" },
+                    new RentalList { PokemonName = "ドレディア", ItemName = "キーのみ" },
+                    new RentalList { PokemonName = "ヒヒダルマ", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "エテボース", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "デスカーン", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ゴルーグ", ItemName = "ちからのハチマキ" },
+                    new RentalList { PokemonName = "アイアント", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ゴローニャ", ItemName = "かたいいし" },
+                    new RentalList { PokemonName = "ヤドラン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "マタドガス", ItemName = "ウタンのみ" },
+                    new RentalList { PokemonName = "ガルーラ", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ケンタロス", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ミカルゲ", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "フリージオ", ItemName = "ヨロギのみ" },
+                    new RentalList { PokemonName = "クリムガン", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ムシャーナ", ItemName = "フォーカスレンズ" },
+                    new RentalList { PokemonName = "ズルズキン", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ナットレイ", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "フーディン", ItemName = "まがったスプーン" },
+                    new RentalList { PokemonName = "ヤドキング", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ミルタンク", ItemName = "ラムのみ" },
+                    new RentalList { PokemonName = "チルタリス", ItemName = "モモンのみ" },
+                    new RentalList { PokemonName = "ドクロッグ", ItemName = "あくのジュエル" },
+                    new RentalList { PokemonName = "ゴチルゼル", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ランクルス", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "キリキザン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ユキノオー", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "ニドクイン", ItemName = "ウタンのみ" },
+                    new RentalList { PokemonName = "ニドキング", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "ユレイドル", ItemName = "ヨロギのみ" },
+                    new RentalList { PokemonName = "アーマルド", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ラムパルド", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "トリデプス", ItemName = "ナゾのみ" },
+                    new RentalList { PokemonName = "フローゼル", ItemName = "しめつけバンド" },
+                    new RentalList { PokemonName = "ムウマージ", ItemName = "ナモのみ" },
+                    new RentalList { PokemonName = "アバゴーラ", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "シュバルゴ", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "アギルダー", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ゼブライカ", ItemName = "でんきのジュエル" },
+                    new RentalList { PokemonName = "フワライド", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "ガマゲロゲ", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ニョロボン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ギャロップ", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "ベトベトン", ItemName = "くろいヘドロ" },
+                    new RentalList { PokemonName = "ゲンガー", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "デンリュウ", ItemName = "シュカのみ" },
+                    new RentalList { PokemonName = "ニョロトノ", ItemName = "まんぷくおこう" },
+                    new RentalList { PokemonName = "カイロス", ItemName = "キーのみ" },
+                    new RentalList { PokemonName = "ハッサム", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "ヘラクロス", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "リングマ", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ヘルガー", ItemName = "もくたん" },
+                    new RentalList { PokemonName = "ドンファン", ItemName = "メトロノーム" },
+                    new RentalList { PokemonName = "ホエルオー", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ネンドール", ItemName = "きゅうこん" },
+                    new RentalList { PokemonName = "ドータクン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ドラピオン", ItemName = "ピントレンズ" },
+                    new RentalList { PokemonName = "レントラー", ItemName = "じしゃく" },
+                    new RentalList { PokemonName = "キュウコン", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "カイリキー", ItemName = "チーゴのみ" },
+                    new RentalList { PokemonName = "ツボツボ", ItemName = "しめつけバンド" },
+                    new RentalList { PokemonName = "ロズレイド", ItemName = "おおきなねっこ" },
+                    new RentalList { PokemonName = "ドンカラス", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ギガイアス", ItemName = "チーゴのみ" },
+                    new RentalList { PokemonName = "ローブシン", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "ドリュウズ", ItemName = "やわらかいすな" },
+                    new RentalList { PokemonName = "ワルビアル", ItemName = "くろいメガネ" },
+                    new RentalList { PokemonName = "ハガネール", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "マニューラ", ItemName = "するどいキバ" },
+                    new RentalList { PokemonName = "グライオン", ItemName = "するどいキバ" },
+                    new RentalList { PokemonName = "ゾロアーク", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "バルジーナ", ItemName = "ソクノのみ" },
+                    new RentalList { PokemonName = "ウォーグル", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "ドククラゲ", ItemName = "くろいヘドロ" },
+                    new RentalList { PokemonName = "プテラ", ItemName = "こだわりハチマキ" },
+                    new RentalList { PokemonName = "ポリゴン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ベロベルト", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "メガヤンマ", ItemName = "クラボのみ" },
+                    new RentalList { PokemonName = "サーナイト", ItemName = "こうかくレンズ" },
+                    new RentalList { PokemonName = "エルレイド", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "ナッシー", ItemName = "ヤタピのみ" },
+                    new RentalList { PokemonName = "スターミー", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "フライゴン", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ギギギアル", ItemName = "シュカのみ" },
+                    new RentalList { PokemonName = "シャンデラ", ItemName = "のろいのおふだ" },
+                    new RentalList { PokemonName = "シャワーズ", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "サンダース", ItemName = "じしゃく" },
+                    new RentalList { PokemonName = "ブースター", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "エーフィ", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ブラッキー", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "リーフィア", ItemName = "ピントレンズ" },
+                    new RentalList { PokemonName = "グレイシア", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "ルカリオ", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "カバルドン", ItemName = "やわらかいすな" },
+                    new RentalList { PokemonName = "ダイノーズ", ItemName = "クラボのみ" },
+                    new RentalList { PokemonName = "ヨノワール", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "コジョンド", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "ツンベアー", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "バッフロン", ItemName = "シルクのスカーフ" },
+                    new RentalList { PokemonName = "ボスゴドラ", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "トドゼルガ", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "マンムー", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "ラプラス", ItemName = "しめったいわ" },
+                    new RentalList { PokemonName = "クロバット", ItemName = "ヨロギのみ" },
+                    new RentalList { PokemonName = "ジバコイル", ItemName = "じしゃく" },
+                    new RentalList { PokemonName = "ドサイドン", ItemName = "フォーカスレンズ" },
+                    new RentalList { PokemonName = "モジャンボ", ItemName = "おおきなねっこ" },
+                    new RentalList { PokemonName = "ポリゴンZ", ItemName = "ものしりメガネ" },
+                    new RentalList { PokemonName = "バイバニラ", ItemName = "とけないこおり" },
+                    new RentalList { PokemonName = "シビルドン", ItemName = "じしゃく" },
+                    new RentalList { PokemonName = "ギャラドス", ItemName = "ちからのハチマキ" },
+                    new RentalList { PokemonName = "カビゴン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "キングドラ", ItemName = "キーのみ" },
+                    new RentalList { PokemonName = "ハピナス", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "ミロカロス", ItemName = "ナゾのみ" },
+                    new RentalList { PokemonName = "エレキブル", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "ブーバーン", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "オノノクス", ItemName = "ハバンのみ" },
+                    new RentalList { PokemonName = "トゲキッス", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ウルガモス", ItemName = "パワフルハーブ" },
+                    new RentalList { PokemonName = "ウインディ", ItemName = "もくたん" },
+                    new RentalList { PokemonName = "アーケオス", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "カイリュー", ItemName = "イバンのみ" },
+                    new RentalList { PokemonName = "バンギラス", ItemName = "くろいてっきゅう" },
+                    new RentalList { PokemonName = "ボーマンダ", ItemName = "ヤチェのみ" },
+                    new RentalList { PokemonName = "メタグロス", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "ガブリアス", ItemName = "のんきのおこう" },
+                    new RentalList { PokemonName = "サザンドラ", ItemName = "りゅうのキバ" },
+                    new RentalList { PokemonName = "ケッキング", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "フシギバナ", ItemName = "きせきのタネ" },
+                    new RentalList { PokemonName = "リザードン", ItemName = "ヨロギのみ" },
+                    new RentalList { PokemonName = "カメックス", ItemName = "フォーカスレンズ" },
+                    new RentalList { PokemonName = "メガニウム", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "バクフーン", ItemName = "こうかくレンズ" },
+                    new RentalList { PokemonName = "オーダイル", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ジュカイン", ItemName = "ピントレンズ" },
+                    new RentalList { PokemonName = "バシャーモ", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "ラグラージ", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ドダイトス", ItemName = "こだわりスカーフ" },
+                    new RentalList { PokemonName = "ゴウカザル", ItemName = "もくたん" },
+                    new RentalList { PokemonName = "エンペルト", ItemName = "ちからのハチマキ" },
+                    new RentalList { PokemonName = "ジャローダ", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "エンブオー", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "ダイケンキ", ItemName = "フォーカスレンズ" },
+                    new RentalList { PokemonName = "ダグトリオ", ItemName = "こだわりハチマキ" },
+                    new RentalList { PokemonName = "ガラガラ", ItemName = "くろいてっきゅう" },
+                    new RentalList { PokemonName = "チャーレム", ItemName = "まがったスプーン" },
+                    new RentalList { PokemonName = "ヌオー", ItemName = "くろいてっきゅう" },
+                    new RentalList { PokemonName = "グランブル", ItemName = "シルクのスカーフ" },
+                    new RentalList { PokemonName = "ルージュラ", ItemName = "あかいいと" },
+                    new RentalList { PokemonName = "バリヤード", ItemName = "ジャポのみ" },
+                    new RentalList { PokemonName = "ランターン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "キノガッサ", ItemName = "どくどくだま" },
+                    new RentalList { PokemonName = "フォレトス", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "エアームド", ItemName = "じゅうでんち" },
+                    new RentalList { PokemonName = "アブソル", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ナマズン", ItemName = "やわらかいすな" },
+                    new RentalList { PokemonName = "ハリテヤマ", ItemName = "イバンのみ" },
+                    new RentalList { PokemonName = "ビークイン", ItemName = "たまむしプレート" },
+                    new RentalList { PokemonName = "ライチュウ", ItemName = "じしゃく" },
+                    new RentalList { PokemonName = "ジュゴン", ItemName = "とけないこおり" },
+                    new RentalList { PokemonName = "ライボルト", ItemName = "もくたん" },
+                    new RentalList { PokemonName = "ムクホーク", ItemName = "こだわりスカーフ" },
+                    new RentalList { PokemonName = "トリトドン", ItemName = "リンドのみ" },
+                    new RentalList { PokemonName = "スカタンク", ItemName = "どくバリ" },
+                    new RentalList { PokemonName = "ダゲキ", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ナゲキ", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "ケンホロウ", ItemName = "パワフルハーブ" },
+                    new RentalList { PokemonName = "ラフレシア", ItemName = "パワフルハーブ" },
+                    new RentalList { PokemonName = "ウツボット", ItemName = "くさのジュエル" },
+                    new RentalList { PokemonName = "マルマイン", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ルンパッパ", ItemName = "タンガのみ" },
+                    new RentalList { PokemonName = "ダーテング", ItemName = "きせきのタネ" },
+                    new RentalList { PokemonName = "バクオング", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ミミロップ", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ユキメノコ", ItemName = "こおりのジュエル" },
+                    new RentalList { PokemonName = "ドレディア", ItemName = "おおきなねっこ" },
+                    new RentalList { PokemonName = "ヒヒダルマ", ItemName = "いのちのたま" },
+                    new RentalList { PokemonName = "エテボース", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "デスカーン", ItemName = "のろいのおふだ" },
+                    new RentalList { PokemonName = "ゴルーグ", ItemName = "こうかくレンズ" },
+                    new RentalList { PokemonName = "アイアント", ItemName = "パワフルハーブ" },
+                    new RentalList { PokemonName = "ゴローニャ", ItemName = "きゅうこん" },
+                    new RentalList { PokemonName = "ヤドラン", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "マタドガス", ItemName = "どくのジュエル" },
+                    new RentalList { PokemonName = "ガルーラ", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "ケンタロス", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "ミカルゲ", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "フリージオ", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "クリムガン", ItemName = "ピントレンズ" },
+                    new RentalList { PokemonName = "ムシャーナ", ItemName = "ラムのみ" },
+                    new RentalList { PokemonName = "ズルズキン", ItemName = "バコウのみ" },
+                    new RentalList { PokemonName = "ナットレイ", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "フーディン", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ヤドキング", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "ミルタンク", ItemName = "するどいキバ" },
+                    new RentalList { PokemonName = "チルタリス", ItemName = "ヤチェのみ" },
+                    new RentalList { PokemonName = "ドクロッグ", ItemName = "ヤタピのみ" },
+                    new RentalList { PokemonName = "ゴチルゼル", ItemName = "まがったスプーン" },
+                    new RentalList { PokemonName = "ランクルス", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "キリキザン", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ユキノオー", ItemName = "きせきのタネ" },
+                    new RentalList { PokemonName = "ニドクイン", ItemName = "きゅうこん" },
+                    new RentalList { PokemonName = "ニドキング", ItemName = "くろいヘドロ" },
+                    new RentalList { PokemonName = "ユレイドル", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "アーマルド", ItemName = "するどいキバ" },
+                    new RentalList { PokemonName = "ラムパルド", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "トリデプス", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "フローゼル", ItemName = "かえんだま" },
+                    new RentalList { PokemonName = "ムウマージ", ItemName = "カシブのみ" },
+                    new RentalList { PokemonName = "アバゴーラ", ItemName = "こうかくレンズ" },
+                    new RentalList { PokemonName = "シュバルゴ", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "アギルダー", ItemName = "ヤタピのみ" },
+                    new RentalList { PokemonName = "ゼブライカ", ItemName = "じしゃく" },
+                    new RentalList { PokemonName = "フワライド", ItemName = "じゅうでんち" },
+                    new RentalList { PokemonName = "ガマゲロゲ", ItemName = "くろいてっきゅう" },
+                    new RentalList { PokemonName = "ニョロボン", ItemName = "かいがらのすず" },
+                    new RentalList { PokemonName = "ギャロップ", ItemName = "あついいわ" },
+                    new RentalList { PokemonName = "ベトベトン", ItemName = "もうどくプレート" },
+                    new RentalList { PokemonName = "ゲンガー", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "デンリュウ", ItemName = "ラムのみ" },
+                    new RentalList { PokemonName = "ニョロトノ", ItemName = "みずのジュエル" },
+                    new RentalList { PokemonName = "カイロス", ItemName = "たまむしプレート" },
+                    new RentalList { PokemonName = "ハッサム", ItemName = "たまむしプレート" },
+                    new RentalList { PokemonName = "ヘラクロス", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "リングマ", ItemName = "どくどくだま" },
+                    new RentalList { PokemonName = "ヘルガー", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ドンファン", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "ホエルオー", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "ネンドール", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ドータクン", ItemName = "しめったいわ" },
+                    new RentalList { PokemonName = "ドラピオン", ItemName = "あくのジュエル" },
+                    new RentalList { PokemonName = "レントラー", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "キュウコン", ItemName = "ほのおのジュエル" },
+                    new RentalList { PokemonName = "カイリキー", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "ツボツボ", ItemName = "せんせいのツメ" },
+                    new RentalList { PokemonName = "ロズレイド", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "ドンカラス", ItemName = "くろいメガネ" },
+                    new RentalList { PokemonName = "ギガイアス", ItemName = "かたいいし" },
+                    new RentalList { PokemonName = "ローブシン", ItemName = "くろおび" },
+                    new RentalList { PokemonName = "ドリュウズ", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ワルビアル", ItemName = "いわのジュエル" },
+                    new RentalList { PokemonName = "ハガネール", ItemName = "ナゾのみ" },
+                    new RentalList { PokemonName = "マニューラ", ItemName = "とけないこおり" },
+                    new RentalList { PokemonName = "グライオン", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ゾロアーク", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "バルジーナ", ItemName = "ひこうのジュエル" },
+                    new RentalList { PokemonName = "ウォーグル", ItemName = "キーのみ" },
+                    new RentalList { PokemonName = "ドククラゲ", ItemName = "しんぴのしずく" },
+                    new RentalList { PokemonName = "プテラ", ItemName = "イトケのみ" },
+                    new RentalList { PokemonName = "ポリゴン", ItemName = "ヤタピのみ" },
+                    new RentalList { PokemonName = "ベロベルト", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "メガヤンマ", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "サーナイト", ItemName = "ラムのみ" },
+                    new RentalList { PokemonName = "エルレイド", ItemName = "ピントレンズ" },
+                    new RentalList { PokemonName = "ナッシー", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "スターミー", ItemName = "しんぴのしずく" },
+                    new RentalList { PokemonName = "フライゴン", ItemName = "ハバンのみ" },
+                    new RentalList { PokemonName = "ギギギアル", ItemName = "しろいハーブ" },
+                    new RentalList { PokemonName = "シャンデラ", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "シャワーズ", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "サンダース", ItemName = "しめったいわ" },
+                    new RentalList { PokemonName = "ブースター", ItemName = "もくたん" },
+                    new RentalList { PokemonName = "エーフィ", ItemName = "カシブのみ" },
+                    new RentalList { PokemonName = "ブラッキー", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "リーフィア", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "グレイシア", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "ルカリオ", ItemName = "きあいのタスキ" },
+                    new RentalList { PokemonName = "カバルドン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ダイノーズ", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "ヨノワール", ItemName = "くろいてっきゅう" },
+                    new RentalList { PokemonName = "コジョンド", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "ツンベアー", ItemName = "とけないこおり" },
+                    new RentalList { PokemonName = "バッフロン", ItemName = "ヨプのみ" },
+                    new RentalList { PokemonName = "ボスゴドラ", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "トドゼルガ", ItemName = "メトロノーム" },
+                    new RentalList { PokemonName = "マンムー", ItemName = "フォーカスレンズ" },
+                    new RentalList { PokemonName = "ラプラス", ItemName = "しんぴのしずく" },
+                    new RentalList { PokemonName = "クロバット", ItemName = "するどいくちばし" },
+                    new RentalList { PokemonName = "ジバコイル", ItemName = "シュカのみ" },
+                    new RentalList { PokemonName = "ドサイドン", ItemName = "かたいいし" },
+                    new RentalList { PokemonName = "モジャンボ", ItemName = "ヤチェのみ" },
+                    new RentalList { PokemonName = "ポリゴンZ", ItemName = "こだわりメガネ" },
+                    new RentalList { PokemonName = "バイバニラ", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "シビルドン", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "ギャラドス", ItemName = "カゴのみ" },
+                    new RentalList { PokemonName = "カビゴン", ItemName = "オボンのみ" },
+                    new RentalList { PokemonName = "キングドラ", ItemName = "ハバンのみ" },
+                    new RentalList { PokemonName = "ハピナス", ItemName = "イバンのみ" },
+                    new RentalList { PokemonName = "ミロカロス", ItemName = "たべのこし" },
+                    new RentalList { PokemonName = "エレキブル", ItemName = "シュカのみ" },
+                    new RentalList { PokemonName = "ブーバーン", ItemName = "こうかくレンズ" },
+                    new RentalList { PokemonName = "オノノクス", ItemName = "キーのみ" },
+                    new RentalList { PokemonName = "トゲキッス", ItemName = "チイラのみ" },
+                    new RentalList { PokemonName = "ウルガモス", ItemName = "ラムのみ" },
+                    new RentalList { PokemonName = "ウインディ", ItemName = "ほのおのジュエル" },
+                    new RentalList { PokemonName = "アーケオス", ItemName = "ナゾのみ" },
+                    new RentalList { PokemonName = "カイリュー", ItemName = "カムラのみ" },
+                    new RentalList { PokemonName = "バンギラス", ItemName = "おうじゃのしるし" },
+                    new RentalList { PokemonName = "ボーマンダ", ItemName = "たつじんのおび" },
+                    new RentalList { PokemonName = "メタグロス", ItemName = "オッカのみ" },
+                    new RentalList { PokemonName = "ガブリアス", ItemName = "するどいキバ" },
+                    new RentalList { PokemonName = "サザンドラ", ItemName = "こうかくレンズ" },
+                    new RentalList { PokemonName = "ケッキング", ItemName = "オボンのみ" }
+                };
+                return RpokemonList;
             }
-
-        } while (Console.ReadKey().Key == ConsoleKey.R);
-    }
-
-    static ulong NextSeed(ulong PWTSeed)
-    {
-        ulong a = 0x5D588B656C078965;
-        ulong b = 0x269EC3;
-        ulong result = (a * PWTSeed + b) & 0xFFFFFFFFFFFFFFFF;
-        return result;
+        }
     }
 }
-
-
-
