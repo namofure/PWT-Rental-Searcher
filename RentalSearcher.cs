@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Rental_RNG;
 using static Rental_RNG.RentalList;
+using static Rental_RNG.PID;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 
 internal class RentalSearcher
 {
@@ -16,38 +19,53 @@ internal class RentalSearcher
         {
             Console.WriteLine("\n======================================");
             Console.Write("RentalPokemon Searcher\n");
-            Console.Write("Initial SEED : 0x");   // 初期SEED入力
 
-            if (ulong.TryParse(Console.ReadLine(), System.Globalization.NumberStyles.HexNumber, null, out ulong Seed))
+            if (!File.Exists("Config.txt"))
             {
-                string outputPath = $"RentalPokemon.txt";
-                List<RentalList> RpokemonList = PokemonData.GetPokemonRentalList();
-                //using (StreamWriter writer = new(outputPath))
+                Console.WriteLine("setting.txtが見つかりませんでした");
+                Console.ReadKey();
+                return;
+            }
+
+            string outputPath = $"RentalPokemon.txt";
+            List<RentalList> RpokemonList = PokemonData.GetPokemonRentalList();
+            using (StreamWriter writer = new(outputPath))
+            {
+                writer.WriteLine("【RentalPokemon List】");
+
+                HashSet<string> targetSet = new();
+
+                Console.WriteLine("---------------");
+                writer.WriteLine("---------------");
+
+                while (targetSet.Count < 6)
                 {
-                    //writer.WriteLine("【RentalPokemon List】");
-                    //writer.WriteLine($"Initial Seed：0x{Seed:X16}");
-                    //writer.WriteLine("");
+                    Console.Write($"{targetSet.Count + 1}：");
+                    string target = Console.ReadLine()?.Trim();
 
-                    HashSet<string> targetSet = new();
-
-                    Console.WriteLine("---------------");  
-
-                    while (targetSet.Count < 6)
+                    if (string.IsNullOrWhiteSpace(target))
                     {
-                        Console.Write($"{targetSet.Count + 1}：");
-                        string target = Console.ReadLine()?.Trim();
-
-                        if (string.IsNullOrWhiteSpace(target))
-                        {
-                            break;
-                        }
-
-                        targetSet.Add(target);
+                        break;
                     }
 
-                    Console.WriteLine("---------------");
+                    targetSet.Add(target);
 
-                    for (int Count = 0; Count < 100000000; Count++, Seed = NextSeed(Seed))
+                    writer.WriteLine($"{targetSet.Count}：{target}");
+                }
+
+                Console.WriteLine("---------------");
+                writer.WriteLine("---------------");
+
+                Console.WriteLine("[年, 月, 秒, 時, 分, 秒, VCount, Timer0, 初期SEED]\n");
+                writer.WriteLine("[年, 月, 秒, 時, 分, 秒, VCount, Timer0, 初期SEED]\n");
+
+                for (int n = 0; n < PID.Count; n++)     //初期SEED
+                {
+                    InSeedData SeedData = PID.GenSeed();
+                    ulong Seed = SeedData.Seed;
+                    int Flag = 0;
+
+                    for (int Count = 0; Count < PID.PIDCount; Count++, Seed = NextSeed(Seed))   //PID
                     {
                         ulong temp = NextSeed(Seed);
 
@@ -61,9 +79,11 @@ internal class RentalSearcher
                         {
                             ulong ExCount = 0;
 
-                            for (int n = 0; n < 350; n++)
+                            if (CountFlag == 100) return;
+
+                            for (int m = 0; m < 350; m++)
                             {
-                                var Entry = RpokemonList[n];
+                                var Entry = RpokemonList[m];
 
                                 if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
                                 {
@@ -104,35 +124,59 @@ internal class RentalSearcher
 
                             RentalList SelectedIndex = RpokemonList[RentalIndex];
 
-                            //writer.WriteLine($"{i + 1}: {SelectedIndex.PokemonName}@{SelectedIndex.ItemName}");
+                            if (targetSet.Count == 6 && !targetSet.Contains(SelectedIndex.PokemonName))
+                            {
+                                Flag = 1;
+                                break;
+                            }
 
                             SelectedList.Add(SelectedIndex);
                             SelectedPokemon.Add(SelectedIndex.PokemonName);
                             SelectedItem.Add(SelectedIndex.ItemName);
+
                         }
 
-                        //writer.WriteLine("");
-
-                        if (SelectedPokemon.IsSupersetOf(targetSet))
+                        if (targetSet.Count == 0 || SelectedPokemon.IsSupersetOf(targetSet))
                         {
-                            for (int n = 0; n < 6; n++)
+                            if (Flag == 1)
                             {
-                                Console.WriteLine($"{n + 1}：{SelectedList[n].PokemonName}@{SelectedList[n].ItemName}");
+                                break;
+                            }
+
+                            Console.WriteLine($"{SeedData.Year}, {SeedData.Month}, {SeedData.Day}, {SeedData.Hour}, {SeedData.Minute}, {SeedData.Second}, 0x{SeedData.VCount:X2}, 0x{SeedData.Timer0:X4}, 0x{SeedData.Seed:X16}");
+                            writer.WriteLine($"{SeedData.Year}, {SeedData.Month}, {SeedData.Day}, {SeedData.Hour}, {SeedData.Minute}, {SeedData.Second}, 0x{SeedData.VCount:X2}, 0x{SeedData.Timer0:X4}, 0x{SeedData.Seed:X16}");
+
+                            for (int m = 0; m < 6; m++)
+                            {
+                                Console.WriteLine($"{m + 1}：{SelectedList[m].PokemonName}@{SelectedList[m].ItemName}");
+                                writer.WriteLine($"{m + 1}：{SelectedList[m].PokemonName}@{SelectedList[m].ItemName}");
                             }
 
                             ulong TempSeed = Seed;
-                            for (int n = 0; n < 24; n++)
+                            for (int m = 0; m < 24; m++)
                             {
                                 TempSeed = NextSeed(TempSeed);
                             }
 
-                            Console.WriteLine($"\nSeed：0x{Seed:X16}");
+                            Console.WriteLine($"Seed：0x{Seed:X16}");
+                            writer.WriteLine($"Seed：0x{Seed:X16}");
+                            Console.WriteLine($"Count：{Count}");
+                            writer.WriteLine($"Count：{Count}");
                             Console.WriteLine($"Current Seed：0x{TempSeed:X16}");
-                            Console.WriteLine($"Count：{Count + 1}");
+                            writer.WriteLine($"Current Seed：0x{TempSeed:X16}");
+                            Console.WriteLine("");
+                            writer.WriteLine("");
+
+                            if(CountFlag == 1) CountFlag += 99;
                         }
+
+
                     }
-                    Console.WriteLine("======================================");
+                    Console.WriteLine($"PID.Count：{n + 1}");
+
                 }
+                Console.WriteLine("======================================");
+
             }
 
         } while (Console.ReadKey().Key == ConsoleKey.R);
