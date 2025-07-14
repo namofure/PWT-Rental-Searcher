@@ -1,0 +1,22 @@
+nazo1 = 0x0209A8DC
+nazo2 = 0x02039AC9
+nazo3 = 0x021FF9B0
+Vount = 0x82
+Timer0 = 0x1102
+Mac1 = 0x00112288
+Mac2 = 0x2277
+GxFra = 0x06000000
+Frame = 0x8
+key = 0x00002FFF
+Prm1 = 0x80000000
+Prm2 = 0x00000000
+Prm3 = 0x000001A0
+------------------------------
+DateTime = 2000/01/01 00:00:00
+AddHours = 0
+AddMinutes = 10
+AssSeconds = 0
+Count = 10000
+PIDCount = 10000
+CountFlag = 0
+------------------------------
