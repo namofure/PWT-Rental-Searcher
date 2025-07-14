@@ -124,25 +124,18 @@ internal class RentalSearcher
 
                             RentalList SelectedIndex = RpokemonList[RentalIndex];
 
-                            if (targetSet.Count == 6 && !targetSet.Contains(SelectedIndex.PokemonName))
-                            {
-                                Flag = 1;
-                                break;
-                            }
-
                             SelectedList.Add(SelectedIndex);
                             SelectedPokemon.Add(SelectedIndex.PokemonName);
                             SelectedItem.Add(SelectedIndex.ItemName);
 
+                            if (targetSet.Count == 6 && !targetSet.IsSupersetOf(SelectedPokemon))
+                            {
+                                break;
+                            }
                         }
 
                         if (targetSet.Count == 0 || SelectedPokemon.IsSupersetOf(targetSet))
                         {
-                            if (Flag == 1)
-                            {
-                                break;
-                            }
-
                             Console.WriteLine($"{SeedData.Year}, {SeedData.Month}, {SeedData.Day}, {SeedData.Hour}, {SeedData.Minute}, {SeedData.Second}, 0x{SeedData.VCount:X2}, 0x{SeedData.Timer0:X4}, 0x{SeedData.Seed:X16}");
                             writer.WriteLine($"{SeedData.Year}, {SeedData.Month}, {SeedData.Day}, {SeedData.Hour}, {SeedData.Minute}, {SeedData.Second}, 0x{SeedData.VCount:X2}, 0x{SeedData.Timer0:X4}, 0x{SeedData.Seed:X16}");
 
