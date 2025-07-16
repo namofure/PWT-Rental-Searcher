@@ -79,7 +79,11 @@ internal class RentalSearcher
                         {
                             ulong ExCount = 0;
 
-                            if (CountFlag == 100) return;
+                            if (CountFlag == 100)
+                            {
+                                Console.ReadKey();   
+                                return;
+                            }
 
                             for (int m = 0; m < 350; m++)
                             {
