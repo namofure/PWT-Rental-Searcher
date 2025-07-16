@@ -34,7 +34,7 @@ Config.txtで各種パラメータを設定することで,
  - AddTimes：DateTimeに追加したい条件を設定. DateTime = 00:00:30, AddSeconds = 0にすれば起動時間を30秒に固定できる.
  - Count：初期SEED検索の回数を設定.
  - PIDCount：性格値乱数消費数の上限を設定.
- - CountFlag：1(か100)のとき, SEEDを1つ見つけたら終了する.
+ - CountFlag：1のとき, SEEDを1つ見つけたら終了する.
 
 ## 5genSeedUnti
 BW2の初期SEED検索の簡易版です. 
@@ -48,6 +48,7 @@ Config.txtの各種パラメータを参照して検索を行います.
 PWT乱数のあれこれ (https://namofure.hatenablog.com/entry/2025/05/29/214716)
 
 ## バージョン情報
+- v1.0.1 完全一致検索処理の修正
 - v1.0.0 初版
 
 ## 製作者
