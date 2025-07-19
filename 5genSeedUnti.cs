@@ -28,6 +28,7 @@ namespace Rental_RNG
         public static int Count;
         public static int PIDCount;
         public static int CountFlag;
+        public static string Drawing;
 
         static PID()
         {
@@ -49,6 +50,7 @@ namespace Rental_RNG
             Count = int.Parse(lines[18].Split('=')[1].Trim());
             PIDCount = int.Parse(lines[19].Split('=')[1].Trim());
             CountFlag = int.Parse(lines[20].Split('=')[1].Trim());
+            Drawing = lines[21].Split('=')[1].Trim();
 
             PID.increment = new TimeSpan(AddHours, AddMinutes, AddSeconds);
         }
