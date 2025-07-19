@@ -28,7 +28,9 @@ internal class RentalSearcher
             }
 
             string outputPath = $"RentalPokemon.txt";
-            List<RentalList> RpokemonList = PokemonData.GetPokemonRentalList();
+            List<RentalList> PokemonList1 = PokemonData.GetRentalList1();
+            List<RentalList> PokemonList2 = PokemonData.GetRentalList2();
+
             using (StreamWriter writer = new(outputPath))
             {
                 writer.WriteLine("【RentalPokemon List】");
@@ -69,68 +71,223 @@ internal class RentalSearcher
                     {
                         ulong temp = NextSeed(Seed);
 
-                        //writer.WriteLine($"Seed：0x{temp:X16}");
-
                         List<RentalList> SelectedList = new();
                         HashSet<string> SelectedPokemon = new();
                         HashSet<string> SelectedItem = new();
+
+                        if (CountFlag == 100)
+                        {
+                            Console.ReadKey();
+                            return;
+                        }
 
                         for (int i = 0; i < 6; i++, temp = NextSeed(temp))
                         {
                             ulong ExCount = 0;
 
-                            if (CountFlag == 100)
+                            if (Drawing == "R")
                             {
-                                Console.ReadKey();   
-                                return;
-                            }
-
-                            for (int m = 0; m < 350; m++)
-                            {
-                                var Entry = RpokemonList[m];
-
-                                if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                for (int m = 0; m < 350; m++)
                                 {
-                                    ExCount++;
-                                }
-                            }
+                                    var Entry = PokemonList1[m];
 
-                            ulong temp1 = temp >> 48;
-                            ulong temp2 = temp1 + ((temp >> 32) - (temp1 << 16));
-                            ulong temp3 = temp >> 48;
-                            if (temp2 > 0xFFFF) temp3++;
-
-                            var RentalIndex = 0;
-                            ulong RawIndex = temp3 % (350 - ExCount);
-
-                            while (RawIndex > 0)
-                            {
-                                var Entry = RpokemonList[RentalIndex];
-                                RentalIndex++;
-
-                                if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
-                                {
-                                    continue;
+                                    if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                    {
+                                        ExCount++;
+                                    }
                                 }
 
-                                RawIndex--;
-                            }
+                                ulong temp1 = temp >> 48;
+                                ulong temp2 = temp1 + ((temp >> 32) - (temp1 << 16));
+                                ulong temp3 = temp >> 48;
+                                if (temp2 > 0xFFFF) temp3++;
 
-                            if (RawIndex == 0)
-                            {
-                                var Entry = RpokemonList[RentalIndex];
+                                var RentalIndex = 0;
+                                ulong RawIndex = temp3 % (350 - ExCount);
 
-                                if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                while (RawIndex > 0)
                                 {
+                                    var Entry = PokemonList1[RentalIndex];
                                     RentalIndex++;
+
+                                    if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                    {
+                                        continue;
+                                    }
+
+                                    RawIndex--;
                                 }
+
+                                if (RawIndex == 0)
+                                {
+                                    var Entry = PokemonList1[RentalIndex];
+
+                                    if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                    {
+                                        RentalIndex++;
+                                    }
+                                }
+
+                                RentalList SelectedIndex = PokemonList1[RentalIndex];
+
+                                SelectedList.Add(SelectedIndex);
+                                SelectedPokemon.Add(SelectedIndex.PokemonName);
+                                SelectedItem.Add(SelectedIndex.ItemName);
                             }
 
-                            RentalList SelectedIndex = RpokemonList[RentalIndex];
+                            if (Drawing == "M")
+                            {
 
-                            SelectedList.Add(SelectedIndex);
-                            SelectedPokemon.Add(SelectedIndex.PokemonName);
-                            SelectedItem.Add(SelectedIndex.ItemName);
+                                for (int m = 0; m < 350; m++)
+                                {
+                                    var Entry = PokemonList2[m];
+
+                                    if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                    {
+                                        ExCount++;
+                                    }
+                                }
+
+                                ulong temp1 = temp >> 48;
+                                ulong temp2 = temp1 + ((temp >> 32) - (temp1 << 16));
+                                ulong temp3 = temp >> 48;
+                                if (temp2 > 0xFFFF) temp3++;
+
+                                var RentalIndex = 0;
+                                ulong RawIndex = temp3 % (350 - ExCount);
+
+                                while (RawIndex > 0)
+                                {
+                                    var Entry = PokemonList2[RentalIndex];
+                                    RentalIndex++;
+
+                                    if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                    {
+                                        continue;
+                                    }
+
+                                    RawIndex--;
+                                }
+
+                                if (RawIndex == 0)
+                                {
+                                    var Entry = PokemonList2[RentalIndex];
+
+                                    if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                    {
+                                        RentalIndex++;
+                                    }
+                                }
+
+                                RentalList SelectedIndex = PokemonList2[RentalIndex];
+
+                                SelectedList.Add(SelectedIndex);
+                                SelectedPokemon.Add(SelectedIndex.PokemonName);
+                                SelectedItem.Add(SelectedIndex.ItemName);
+                            }
+
+                            if (Drawing == "L")
+                            {
+                                if (i < 3)
+                                {
+                                    for (int m = 0; m < 350; m++)
+                                    {
+                                        var Entry = PokemonList2[m];
+
+                                        if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                        {
+                                            ExCount++;
+                                        }
+                                    }
+
+                                    ulong temp1 = temp >> 48;
+                                    ulong temp2 = temp1 + ((temp >> 32) - (temp1 << 16));
+                                    ulong temp3 = temp >> 48;
+                                    if (temp2 > 0xFFFF) temp3++;
+
+                                    var RentalIndex = 0;
+                                    ulong RawIndex = temp3 % (350 - ExCount);
+
+                                    while (RawIndex > 0)
+                                    {
+                                        var Entry = PokemonList2[RentalIndex];
+                                        RentalIndex++;
+
+                                        if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                        {
+                                            continue;
+                                        }
+
+                                        RawIndex--;
+                                    }
+
+                                    if (RawIndex == 0)
+                                    {
+                                        var Entry = PokemonList2[RentalIndex];
+
+                                        if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                        {
+                                            RentalIndex++;
+                                        }
+                                    }
+
+                                    RentalList SelectedIndex = PokemonList2[RentalIndex];
+
+                                    SelectedList.Add(SelectedIndex);
+                                    SelectedPokemon.Add(SelectedIndex.PokemonName);
+                                    SelectedItem.Add(SelectedIndex.ItemName);
+                                }
+
+                                if (2 < i & i < 6)
+                                {
+                                    for (int m = 0; m < 350; m++)
+                                    {
+                                        var Entry = PokemonList1[m];
+
+                                        if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                        {
+                                            ExCount++;
+                                        }
+                                    }
+
+                                    ulong temp1 = temp >> 48;
+                                    ulong temp2 = temp1 + ((temp >> 32) - (temp1 << 16));
+                                    ulong temp3 = temp >> 48;
+                                    if (temp2 > 0xFFFF) temp3++;
+
+                                    var RentalIndex = 0;
+                                    ulong RawIndex = temp3 % (350 - ExCount);
+
+                                    while (RawIndex > 0)
+                                    {
+                                        var Entry = PokemonList1[RentalIndex];
+                                        RentalIndex++;
+
+                                        if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                        {
+                                            continue;
+                                        }
+
+                                        RawIndex--;
+                                    }
+
+                                    if (RawIndex == 0)
+                                    {
+                                        var Entry = PokemonList1[RentalIndex];
+
+                                        if (SelectedPokemon.Contains(Entry.PokemonName) || SelectedItem.Contains(Entry.ItemName))
+                                        {
+                                            RentalIndex++;
+                                        }
+                                    }
+
+                                    RentalList SelectedIndex = PokemonList1[RentalIndex];
+
+                                    SelectedList.Add(SelectedIndex);
+                                    SelectedPokemon.Add(SelectedIndex.PokemonName);
+                                    SelectedItem.Add(SelectedIndex.ItemName);
+                                }
+                            }
 
                             if (targetSet.Count == 6 && !targetSet.IsSupersetOf(SelectedPokemon))
                             {
@@ -138,7 +295,7 @@ internal class RentalSearcher
                             }
                         }
 
-                        if (targetSet.Count == 0 || SelectedPokemon.IsSupersetOf(targetSet))
+                        if (targetSet.Count == 0 || SelectedPokemon.IsSupersetOf(targetSet)) 
                         {
                             Console.WriteLine($"{SeedData.Year}, {SeedData.Month}, {SeedData.Day}, {SeedData.Hour}, {SeedData.Minute}, {SeedData.Second}, 0x{SeedData.VCount:X2}, 0x{SeedData.Timer0:X4}, 0x{SeedData.Seed:X16}");
                             writer.WriteLine($"{SeedData.Year}, {SeedData.Month}, {SeedData.Day}, {SeedData.Hour}, {SeedData.Minute}, {SeedData.Second}, 0x{SeedData.VCount:X2}, 0x{SeedData.Timer0:X4}, 0x{SeedData.Seed:X16}");
@@ -164,16 +321,13 @@ internal class RentalSearcher
                             Console.WriteLine("");
                             writer.WriteLine("");
 
-                            if(CountFlag == 1) CountFlag += 99;
+                            if (CountFlag == 1) CountFlag += 99;
                         }
-
-
                     }
                     Console.WriteLine($"PID.Count：{n + 1}");
 
                 }
                 Console.WriteLine("======================================");
-
             }
 
         } while (Console.ReadKey().Key == ConsoleKey.R);
@@ -187,6 +341,5 @@ internal class RentalSearcher
         return result;
     }
 }
-
 
 
