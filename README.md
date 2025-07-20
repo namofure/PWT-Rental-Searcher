@@ -15,6 +15,8 @@ Config.txtで各種パラメータを設定することで,
 
 (https://wiki.ポケモン.com//wiki/バトルサブウェイのポケモン一覧#スーパートレイン)
 
+初期SEEDの確認等は同封する PID Searcher を使用してください.
+
 ## Config.txt
  - Nazo値：バージョンに対応した値を設定.
  - VCount, Timer0：バージョンに対応した値を設定.
@@ -32,7 +34,7 @@ Config.txtで各種パラメータを設定することで,
  - AddTimes：DateTimeに追加したい条件を設定. DateTime = 00:00:30, AddSeconds = 0にすれば起動時間を30秒に固定できる.
  - Count：初期SEED検索の回数を設定.
  - PIDCount：性格値乱数消費数の上限を設定.
- - CountFlag：1のとき, SEEDを1つ見つけたら終了する.
+ - CountFlag：設定した数だけ結果を出力. 0なら全部.
  - Drawing："R" 右のクジ, "M" 真ん中のクジ, "L" 左のクジ
 
 ## 5genSeedUnti
@@ -47,6 +49,7 @@ Config.txtの各種パラメータを参照して検索を行います.
 PWT乱数のあれこれ (https://namofure.hatenablog.com/entry/2025/05/29/214716)
 
 ## バージョン情報
+ - v1.1.1 CountFlag処理の修正
  - v1.1.0 真ん中のクジ, 左のクジに対応
  - v1.0.1 完全一致検索処理の修正
  - v1.0.0 初版
