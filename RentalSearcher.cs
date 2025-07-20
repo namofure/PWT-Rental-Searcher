@@ -75,12 +75,6 @@ internal class RentalSearcher
                         HashSet<string> SelectedPokemon = new();
                         HashSet<string> SelectedItem = new();
 
-                        if (CountFlag == 100)
-                        {
-                            Console.ReadKey();
-                            return;
-                        }
-
                         for (int i = 0; i < 6; i++, temp = NextSeed(temp))
                         {
                             ulong ExCount = 0;
@@ -321,7 +315,9 @@ internal class RentalSearcher
                             Console.WriteLine("");
                             writer.WriteLine("");
 
-                            if (CountFlag == 1) CountFlag += 99;
+                            Flag += 1;
+
+                            if (CountFlag > 0 && CountFlag == Flag) return;
                         }
                     }
                     Console.WriteLine($"PID.Count：{n + 1}");
