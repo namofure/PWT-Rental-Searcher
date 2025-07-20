@@ -22,7 +22,7 @@ internal class RentalSearcher
 
             if (!File.Exists("Config.txt"))
             {
-                Console.WriteLine("setting.txtが見つかりませんでした");
+                Console.WriteLine("Config.txtが見つかりませんでした");
                 Console.ReadKey();
                 return;
             }
